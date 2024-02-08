@@ -41,14 +41,12 @@ export class App extends Component {
   };
 
   setStorage = () => {
-    console.log('set');
     return localStorage.setItem(
       'contacts',
       JSON.stringify(this.state.contacts)
     );
   };
   getStorage = async () => {
-    console.log('get');
     const localContacts = await JSON.parse(localStorage.getItem('contacts'));
     try {
       if (localContacts) {
