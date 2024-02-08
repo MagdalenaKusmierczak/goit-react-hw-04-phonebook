@@ -3,7 +3,7 @@ import {
   ContactsWrapper,
   ContactsTitle,
   ContactsList,
-  ContactEement,
+  ContactElement,
   DeleteBtn,
 } from './ContactList.styled';
 const ContactList = ({ contacts, handleDelete, children }) => {
@@ -13,12 +13,12 @@ const ContactList = ({ contacts, handleDelete, children }) => {
       {children}
       <ContactsList>
         {contacts.map(contact => (
-          <ContactEement key={contact.id} id={contact.id}>
-            {contact.name}: {contact.number}{' '}
+          <ContactElement key={contact.id} id={contact.id}>
+            {contact.name}: {contact.number}
             <DeleteBtn id={contact.id} onClick={() => handleDelete(contact.id)}>
               Delete
             </DeleteBtn>
-          </ContactEement>
+          </ContactElement>
         ))}
       </ContactsList>
     </ContactsWrapper>
@@ -26,6 +26,7 @@ const ContactList = ({ contacts, handleDelete, children }) => {
 };
 
 ContactList.propTypes = {
+  children: PropTypes.object.isRequired,
   contacts: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

@@ -1,83 +1,53 @@
-import React, { Component } from 'react';
-
+import { useState, useEffect } from 'react';
 import Section from './Section/Section.jsx';
 import ContactList from './ContactList/ContactList.jsx';
 import ContactForm from './ContactForm/ContactForm.jsx';
 import Filter from './Filter/Filter.jsx';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    error: null,
-    filter: '',
-  };
+const localStorageContacts = JSON.parse(localStorage.getItem('contacts'));
 
-  handleRepeat = contact => {
+const App = () => {
+  const [contacts, setContacts] = useState(() => localStorageContacts ?? []);
+  const [filter, setFilter] = useState('');
+
+  const normalizedFilter = filter.toLowerCase();
+
+  const handleRepeat = contact => {
+    const newContact = {
+      id: contact.id,
+      name: contact.name,
+      number: contact.number,
+    };
     let arr = [];
-    arr = this.state.contacts.map(cur => cur.name);
+    arr = contacts.map(cur => cur.name);
     if (arr.includes(contact.name)) {
       return alert(`${contact.name} is arleady in contacts`);
     }
-    return this.setState(prevState => ({
-      contacts: [{ ...contact }, ...prevState.contacts],
-    }));
+    setContacts(prevState => [...prevState, newContact]);
   };
 
-  handleFilter = evt => {
-    this.setState({ filter: evt.currentTarget.value });
+  const handleFilter = evt => {
+    setFilter(evt.currentTarget.value);
   };
-  filteredContacts = () => {
-    const { filter, contacts } = this.state;
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter)
-    );
+  const filteredContact = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedFilter)
+  );
+  //Delete contact
+  const handleDelete = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
   };
-  handleDelete = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
-  };
+  //Updating local storage
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]);
+  return (
+    <Section title="Phonebook">
+      <ContactForm onSubmit={handleRepeat} />
 
-  setStorage = () => {
-    return localStorage.setItem(
-      'contacts',
-      JSON.stringify(this.state.contacts)
-    );
-  };
-  getStorage = async () => {
-    const localContacts = await JSON.parse(localStorage.getItem('contacts'));
-    try {
-      if (localContacts) {
-        this.setState({ contacts: localContacts });
-      }
-    } catch (error) {
-      this.setState({
-        error,
-      });
-    }
-  };
-
-  render() {
-    const filtredContact = this.filteredContacts();
-    return (
-      <Section title="Phonebook">
-        <ContactForm onSubmit={this.handleRepeat} />
-
-        <ContactList contacts={filtredContact} handleDelete={this.handleDelete}>
-          <Filter filter={this.state.filter} handleFilter={this.handleFilter} />
-        </ContactList>
-      </Section>
-    );
-  }
-  componentDidMount() {
-    this.getStorage();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (JSON.stringify(this.state.contacts) !== JSON.stringify(prevState.contact)) {
-      this.setStorage();
-    }
-  }
-}
+      <ContactList contacts={filteredContact} handleDelete={handleDelete}>
+        <Filter filter={filter} handleFilter={handleFilter} />
+      </ContactList>
+    </Section>
+  );
+};
+export default App;

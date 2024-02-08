@@ -7,7 +7,7 @@ export const ContactsTitle = styled.h2`
 export const ContactsList = styled.ul`
   margin: 0, auto;
 `;
-export const ContactEement = styled.li`
+export const ContactElement = styled.li`
   flex-wrap: nowrap;
   font-size: 22px;
 `;
